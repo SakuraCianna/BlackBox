@@ -60,6 +60,7 @@ def get_accident(accident_id: int, db: Session = Depends(get_db)):
             selectinload(Accident.causal_chain),
             selectinload(Accident.clues),
             selectinload(Accident.historical_cases),
+            selectinload(Accident.timeline),
         )
         .filter(Accident.id == accident_id)
         .first()

@@ -44,9 +44,7 @@ export default function AnalysisBoard({ accident, selectedFactors, chainOrder, o
         <div>
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">候选因素</p>
           <div className="space-y-2">
-            {availableFactors.map((factor, index) => {
-              const isReal = accident.causal_chain.some((c) => c.factor === factor);
-              return (
+            {availableFactors.map((factor, index) => (
                 <motion.button
                   key={factor}
                   initial={{ opacity: 0, x: -12 }}
@@ -58,8 +56,7 @@ export default function AnalysisBoard({ accident, selectedFactors, chainOrder, o
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/20 text-[10px] text-white/40">+</span>
                   <span className="truncate">{factor}</span>
                 </motion.button>
-              );
-            })}
+              ))}
             {!availableFactors.length && (
               <p className="rounded-xl border border-dashed border-white/10 bg-cockpit/50 px-4 py-3 text-center text-xs text-white/35">所有因素已加入链条</p>
             )}
