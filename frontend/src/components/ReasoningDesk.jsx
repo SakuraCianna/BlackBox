@@ -3,15 +3,19 @@ import gsap from 'gsap';
 
 export default function ReasoningDesk({ accident, selectedFactors }) {
   const deskRef = useRef(null);
+  const animatedRef = useRef(false);
 
   useLayoutEffect(() => {
+    if (animatedRef.current && accident.id) return;
+    animatedRef.current = true;
+
     const context = gsap.context(() => {
       gsap.fromTo('.desk-slip', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.55, stagger: 0.06, ease: 'power3.out' });
       gsap.fromTo('.thinking-pulse', { opacity: 0.25 }, { opacity: 0.75, duration: 1.4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
     }, deskRef);
 
     return () => context.revert();
-  }, [selectedFactors.length, accident.id]);
+  }, [accident.id]);
 
   const displayFactors = selectedFactors.length ? selectedFactors : ['等待固定第一条因素'];
 
