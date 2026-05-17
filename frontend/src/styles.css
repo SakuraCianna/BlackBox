@@ -1,0 +1,439 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
+  background: #071011;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(116, 242, 198, 0.08), transparent 32rem),
+    radial-gradient(circle at 86% 16%, rgba(255, 180, 84, 0.09), transparent 30rem),
+    linear-gradient(145deg, #040706 0%, #091111 46%, #111713 100%);
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-main {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.mission-screen,
+.mission-layout,
+.investigation-shell {
+  height: 100%;
+  min-height: 0;
+}
+
+.mission-layout,
+.investigation-shell {
+  overflow: hidden;
+}
+
+.mission-hero,
+.mission-list-panel {
+  min-height: 0;
+}
+
+.mission-list-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.mission-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.investigation-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.investigation-header,
+.stage-nav {
+  flex: 0 0 auto;
+}
+
+.stage-viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.stage-grid {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  gap: 1.25rem;
+}
+
+.stage-card {
+  min-height: 0;
+  overflow: auto;
+}
+
+.stage-stack {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+}
+
+.stage-stack > section,
+.stage-scroll {
+  min-height: 0;
+  overflow: auto;
+}
+
+.evidence-scroll {
+  max-height: calc(100% - 5.75rem);
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.clue-card {
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.clue-card-meta {
+  min-height: 32px;
+  flex: 0 0 auto;
+}
+
+.clue-card-body {
+  flex: 1 1 auto;
+  padding-top: 1rem;
+}
+
+.clue-card-body p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.clue-card-media {
+  margin-top: auto;
+}
+
+.mission-list::-webkit-scrollbar,
+.stage-card::-webkit-scrollbar,
+.stage-scroll::-webkit-scrollbar,
+.evidence-scroll::-webkit-scrollbar,
+.stage-stack > section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mission-list::-webkit-scrollbar-thumb,
+.stage-card::-webkit-scrollbar-thumb,
+.stage-scroll::-webkit-scrollbar-thumb,
+.evidence-scroll::-webkit-scrollbar-thumb,
+.stage-stack > section::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(232, 221, 199, 0.18);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.radar-grid {
+  background-image:
+    linear-gradient(rgba(232, 221, 199, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 221, 199, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 55% 45%, rgba(116, 242, 198, 0.09), transparent 18rem);
+  background-size: 44px 44px, 44px 44px, 100% 100%;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.reasoning-desk {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(135deg, rgba(52, 38, 25, 0.42), rgba(9, 15, 14, 0.9)),
+    radial-gradient(circle at 30% 20%, rgba(255, 180, 84, 0.14), transparent 18rem);
+  padding: 1.25rem;
+}
+
+.desk-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.desk-board {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 1rem;
+  height: min(420px, calc(100% - 5.5rem));
+  min-height: 300px;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(232, 221, 199, 0.12);
+  background:
+    linear-gradient(rgba(232, 221, 199, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 221, 199, 0.04) 1px, transparent 1px),
+    linear-gradient(140deg, rgba(25, 22, 18, 0.92), rgba(9, 15, 14, 0.96));
+  background-size: 28px 28px, 28px 28px, 100% 100%;
+}
+
+.clue-cluster {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  align-content: start;
+  gap: 0.85rem;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.desk-slip {
+  position: relative;
+  width: 100%;
+  min-height: 124px;
+  border: 1px solid rgba(80, 51, 26, 0.28);
+  border-radius: 10px;
+  background: #d8c9aa;
+  color: #17201d;
+  padding: 0.85rem;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.28);
+}
+
+.desk-slip:nth-child(odd) {
+  transform: rotate(-1.2deg);
+}
+
+.desk-slip:nth-child(even) {
+  transform: rotate(1.1deg);
+}
+
+.desk-slip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #8b2f22;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  transform: translateX(-50%);
+}
+
+.desk-slip span {
+  display: block;
+  font-family: "Cascadia Code", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: rgba(23, 32, 29, 0.54);
+}
+
+.desk-slip strong {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.desk-slip small {
+  display: block;
+  margin-top: 0.65rem;
+  color: rgba(23, 32, 29, 0.62);
+}
+
+.factor-stack {
+  position: relative;
+  align-self: stretch;
+  overflow: auto;
+  width: 100%;
+  min-height: 118px;
+  border-radius: 1rem;
+  border: 1px solid rgba(116, 242, 198, 0.18);
+  background: rgba(4, 7, 6, 0.82);
+  padding: 1rem;
+}
+
+.factor-note {
+  margin-top: 0.65rem;
+  border-left: 3px solid rgba(116, 242, 198, 0.72);
+  background: rgba(116, 242, 198, 0.08);
+  padding: 0.65rem 0.8rem;
+  color: rgba(232, 221, 199, 0.92);
+  font-size: 0.88rem;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.scanline {
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+  mix-blend-mode: overlay;
+}
+
+.scene-shell {
+  position: relative;
+  height: 100%;
+  min-height: 460px;
+  overflow: hidden;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(116, 242, 198, 0.13), transparent 22rem),
+    radial-gradient(circle at 68% 52%, rgba(255, 180, 84, 0.13), transparent 20rem),
+    linear-gradient(150deg, rgba(5, 12, 12, 0.88), rgba(9, 28, 27, 0.9));
+  perspective: 1000px;
+}
+
+.scene-shell-compact {
+  min-height: 280px;
+}
+
+.scene-copy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  padding: 1.5rem;
+  padding-bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 16, 17, 0.95) 0%, rgba(7, 16, 17, 0.6) 60%, transparent 100%);
+  mask-image: linear-gradient(180deg, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, black 40%, transparent 100%);
+}
+
+.three-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.scene-meta {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.scene-meta span {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(5, 12, 12, 0.72);
+  padding: 0.55rem 0.85rem;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    padding: 0.75rem;
+  }
+
+  .mission-layout,
+  .stage-grid {
+    grid-template-rows: auto 1fr;
+  }
+
+  .mission-hero {
+    max-height: 38vh;
+    overflow: auto;
+  }
+
+  .investigation-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .stage-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scene-shell {
+    min-height: 300px;
+  }
+
+  .desk-board {
+    grid-template-columns: 1fr;
+    min-height: 300px;
+    overflow: auto;
+  }
+
+  .clue-cluster {
+    min-height: 300px;
+  }
+
+  .desk-slip {
+    min-height: 104px;
+    font-size: 0.86rem;
+  }
+
+  .clue-cluster {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1279px) {
+  .stage-viewport,
+  .mission-layout {
+    overflow: auto;
+  }
+
+  .stage-grid {
+    height: auto;
+    min-height: 100%;
+    align-content: start;
+  }
+}
+
+::selection {
+  background: rgba(116, 242, 198, 0.3);
+  color: #fff;
+}
