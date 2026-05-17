@@ -9,8 +9,8 @@ const TYPE_LABEL = {
 
 export default function ClueCard({ clue, index, active, onClick }) {
   const [mediaFailed, setMediaFailed] = useState(false);
-  const mediaPath = clue.content.startsWith('placeholder/') ? `/media/${clue.content.replace('placeholder/', '')}` : clue.content;
-  const canShowMedia = clue.type !== 'text' && !mediaFailed;
+  const mediaPath = clue.type === 'text' ? '' : `/media/${clue.content.replace('placeholder/', '')}`;
+  const canShowMedia = clue.type !== 'text' && !mediaFailed && mediaPath;
 
   return (
     <motion.button
