@@ -34,6 +34,19 @@ def score_to_rating(score: int) -> tuple[str, str]:
     return "需要复盘", "当前结论与证据链偏差较大。先从直接异常入手，再追问它为什么会发生。"
 
 
+def _lis_length(seq: list[int]) -> int:
+    """最长递增子序列长度（O(n log n)）"""
+    from bisect import bisect_left
+    tails: list[int] = []
+    for val in seq:
+        pos = bisect_left(tails, val)
+        if pos == len(tails):
+            tails.append(val)
+        else:
+            tails[pos] = val
+    return len(tails)
+
+
 @router.get("/accidents", response_model=list[AccidentListItem])
 def list_accidents(db: Session = Depends(get_db)):
     return db.query(Accident).order_by(Accident.id).all()
@@ -80,10 +93,24 @@ def submit_report(payload: ReportSubmit, db: Session = Depends(get_db)):
     extra_keys = sorted(set(selected_by_key) - set(actual_by_key))
     report_mentions = [key for key in actual_by_key if key in report_key_text]
 
-    factor_score = round((len(matched_keys) / max(len(actual_by_key), 1)) * 70)
-    report_score = min(30, len(set(report_mentions)) * 10 + min(len(payload.report_text.strip()) // 80, 10))
+    # 因果链排序评分
+    actual_order = [normalize_factor(item.factor) for item in accident.causal_chain]
+    actual_rank = {key: i for i, key in enumerate(actual_order)}
+    chain_order_keys = [normalize_factor(f) for f in payload.chain_order if normalize_factor(f) in actual_rank]
+    if len(chain_order_keys) >= 2:
+        mapped = [actual_rank[k] for k in chain_order_keys]
+        lis_len = _lis_length(mapped)
+        chain_order_score = round((lis_len / len(actual_order)) * 100)
+    elif len(chain_order_keys) == 1 and len(actual_order) == 1:
+        chain_order_score = 100
+    else:
+        chain_order_score = 0
+
+    factor_score = round((len(matched_keys) / max(len(actual_by_key), 1)) * 55)
+    report_score = min(25, len(set(report_mentions)) * 8 + min(len(payload.report_text.strip()) // 80, 8))
+    order_bonus = round(chain_order_score * 0.15)
     penalty = min(15, len(extra_keys) * 5)
-    score = max(0, min(100, factor_score + report_score - penalty))
+    score = max(0, min(100, factor_score + report_score + order_bonus - penalty))
     rating, feedback = score_to_rating(score)
 
     matched_factors = [actual_by_key[key] for key in matched_keys]
@@ -129,4 +156,5 @@ def submit_report(payload: ReportSubmit, db: Session = Depends(get_db)):
         ai_score=ai_result["ai_score"],
         ai_feedback=ai_result["ai_feedback"],
         chain_quality=str(ai_result["chain_quality"]),
+        chain_order_score=chain_order_score,
     )

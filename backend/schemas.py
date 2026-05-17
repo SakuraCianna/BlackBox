@@ -37,6 +37,17 @@ class HistoricalCaseRead(BaseModel):
     sort_order: int
 
 
+class TimelineEntryRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    time: str
+    speaker: str
+    text: str
+    is_key_moment: int
+    sort_order: int
+
+
 class AccidentListItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -54,12 +65,14 @@ class AccidentDetail(AccidentListItem):
     causal_chain: list[CausalFactorRead]
     clues: list[ClueRead]
     historical_cases: list[HistoricalCaseRead]
+    timeline: list[TimelineEntryRead] = Field(default_factory=list)
     candidate_factors: list[str] = Field(default_factory=list)
 
 
 class ReportSubmit(BaseModel):
     accident_id: int
     selected_factors: list[str] = Field(default_factory=list)
+    chain_order: list[str] = Field(default_factory=list)
     report_text: str = ""
 
 
@@ -74,3 +87,4 @@ class ReportScoreResponse(BaseModel):
     ai_score: int = 0
     ai_feedback: str = ""
     chain_quality: str = ""
+    chain_order_score: int = 0

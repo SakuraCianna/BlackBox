@@ -17,6 +17,14 @@ export default function ScorePanel({ score }) {
         <ResultLine label="误判因素" items={score.extra_factors} tone="text-danger" />
       </div>
 
+      {score.chain_order_score > 0 && (
+        <div className="mt-3 rounded-2xl border border-white/10 bg-cockpit/70 p-3">
+          <span className="text-white/45">因果链排序：</span>
+          <span className="text-radar">{score.chain_order_score} 分</span>
+          <span className="ml-2 text-[11px] text-white/30">（顺序越接近真实事故链，分越高）</span>
+        </div>
+      )}
+
       {score.ai_score > 0 && (
         <div className="mt-4 rounded-2xl border border-amber/25 bg-amber/10 p-4">
           <div className="flex items-center justify-between">

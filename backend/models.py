@@ -36,6 +36,12 @@ class Accident(Base):
         cascade="all, delete-orphan",
         order_by="HistoricalCase.sort_order",
     )
+    timeline = relationship(
+        "TimelineEntry",
+        back_populates="accident",
+        cascade="all, delete-orphan",
+        order_by="TimelineEntry.sort_order",
+    )
 
 
 class CausalFactor(Base):
@@ -81,6 +87,20 @@ class HistoricalCase(Base):
     sort_order = Column(Integer, nullable=False, default=0)
 
     accident = relationship("Accident", back_populates="historical_cases")
+
+
+class TimelineEntry(Base):
+    __tablename__ = "timeline_entries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    accident_id = Column(Integer, ForeignKey("accidents.id"), nullable=False)
+    time = Column(String(20), nullable=False)
+    speaker = Column(String(80), nullable=False)
+    text = Column(Text, nullable=False)
+    is_key_moment = Column(Integer, nullable=False, default=0)
+    sort_order = Column(Integer, nullable=False, default=0)
+
+    accident = relationship("Accident", back_populates="timeline")
 
 
 class Submission(Base):

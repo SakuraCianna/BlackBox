@@ -9,6 +9,7 @@ import MissionSelect from './components/MissionSelect.jsx';
 import ReasoningDesk from './components/ReasoningDesk.jsx';
 import ReportPanel from './components/ReportPanel.jsx';
 import ScorePanel from './components/ScorePanel.jsx';
+import Timeline from './components/Timeline.jsx';
 import { fetchAccident, fetchAccidents, submitReport } from './services/api.js';
 
 const STAGES = [
@@ -32,6 +33,7 @@ export default function App() {
   const [stage, setStage] = useState('briefing');
   const [activeClue, setActiveClue] = useState(null);
   const [selectedFactors, setSelectedFactors] = useState([]);
+  const [chainOrder, setChainOrder] = useState([]);
   const [historicalCase, setHistoricalCase] = useState(null);
   const [notice, setNotice] = useState('');
   const [reportText, setReportText] = useState('');
@@ -58,6 +60,7 @@ export default function App() {
         setStage('briefing');
         setActiveClue(null);
         setSelectedFactors([]);
+        setChainOrder([]);
         setHistoricalCase(null);
         setNotice('');
         setReportText('');
@@ -85,18 +88,11 @@ export default function App() {
     setNotice(clue.related_factor ? `线索可能指向：${clue.related_factor}` : '这条线索暂时无法直接指向单一因素。');
   }
 
-  function handleToggleFactor(factor) {
-    const isSelected = selectedFactors.includes(factor);
+  function handleAddFactor(factor) {
+    if (chainOrder.includes(factor)) return;
 
-    setSelectedFactors((current) => {
-      if (current.includes(factor)) return current.filter((item) => item !== factor);
-      return [...current, factor];
-    });
-
-    if (isSelected) {
-      setNotice(`已移除因素：${factor}`);
-      return;
-    }
+    setSelectedFactors((current) => current.includes(factor) ? current : [...current, factor]);
+    setChainOrder((current) => [...current, factor]);
 
     if (!realFactorSet.has(factor)) {
       setNotice('这项推断目前缺少证据支撑，可能是干扰项。');
@@ -104,8 +100,23 @@ export default function App() {
     }
 
     const matchedCase = accident.historical_cases.find((item) => item.trigger_factor === factor);
-    setNotice(`已识别关键因素：${factor}`);
+    setNotice(`已加入因果链：${factor}`);
     if (matchedCase) setHistoricalCase(matchedCase);
+  }
+
+  function handleRemoveFactor(factor) {
+    setChainOrder((current) => current.filter((item) => item !== factor));
+    setSelectedFactors((current) => current.filter((item) => item !== factor));
+    setNotice(`已移除：${factor}`);
+  }
+
+  function handleReorder(fromIndex, toIndex) {
+    setChainOrder((current) => {
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
   }
 
   async function handleSubmitReport() {
@@ -116,6 +127,7 @@ export default function App() {
       const result = await submitReport({
         accident_id: accident.id,
         selected_factors: selectedFactors,
+        chain_order: chainOrder,
         report_text: reportText,
       });
       setScore(result);
@@ -145,13 +157,16 @@ export default function App() {
               setStage={setStage}
               activeClue={activeClue}
               selectedFactors={selectedFactors}
+              chainOrder={chainOrder}
               notice={notice}
               reportText={reportText}
               score={score}
               submitting={submitting}
               onExit={exitMission}
               onSelectClue={handleSelectClue}
-              onToggleFactor={handleToggleFactor}
+              onAddFactor={handleAddFactor}
+              onRemoveFactor={handleRemoveFactor}
+              onReorder={handleReorder}
               onReportTextChange={setReportText}
               onSubmitReport={handleSubmitReport}
             />
@@ -171,13 +186,16 @@ function InvestigationShell({
   setStage,
   activeClue,
   selectedFactors,
+  chainOrder,
   notice,
   reportText,
   score,
   submitting,
   onExit,
   onSelectClue,
-  onToggleFactor,
+  onAddFactor,
+  onRemoveFactor,
+  onReorder,
   onReportTextChange,
   onSubmitReport,
 }) {
@@ -217,7 +235,10 @@ function InvestigationShell({
             key="analysis"
             accident={accident}
             selectedFactors={selectedFactors}
-            onToggleFactor={onToggleFactor}
+            chainOrder={chainOrder}
+            onAddFactor={onAddFactor}
+            onRemoveFactor={onRemoveFactor}
+            onReorder={onReorder}
             notice={notice}
             onNext={() => setStage('report')}
           />
@@ -306,49 +327,62 @@ function EvidenceStage({ accident, activeClue, onSelectClue, onNext }) {
         </div>
       </div>
 
-      <div className="stage-card rounded-[2rem] border border-white/10 bg-panel/75 p-5 shadow-glow backdrop-blur">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.4em] text-radar">Evidence Wall</p>
-            <h2 className="mt-2 text-2xl font-bold text-paper">现场证据墙</h2>
+      <div className="stage-stack">
+        <div className="stage-card rounded-[2rem] border border-white/10 bg-panel/75 p-5 shadow-glow backdrop-blur">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.4em] text-radar">Evidence Wall</p>
+              <h2 className="mt-2 text-2xl font-bold text-paper">现场证据墙</h2>
+            </div>
+            <button onClick={onNext} className="rounded-2xl border border-radar/40 px-4 py-2 text-sm text-radar transition hover:bg-radar/10">
+              前往因果推理
+            </button>
           </div>
-          <button onClick={onNext} className="rounded-2xl border border-radar/40 px-4 py-2 text-sm text-radar transition hover:bg-radar/10">
-            前往因果推理
-          </button>
+          <div className="evidence-scroll grid gap-4 md:grid-cols-2">
+            {accident.clues.map((clue, index) => (
+              <ClueCard key={clue.id} clue={clue} index={index} active={activeClue?.id === clue.id} onClick={onSelectClue} />
+            ))}
+          </div>
         </div>
-        <div className="evidence-scroll grid gap-4 md:grid-cols-2">
-          {accident.clues.map((clue, index) => (
-            <ClueCard key={clue.id} clue={clue} index={index} active={activeClue?.id === clue.id} onClick={onSelectClue} />
-          ))}
-        </div>
+        <Timeline entries={accident.timeline || []} />
       </div>
     </motion.section>
   );
 }
 
-function AnalysisStage({ accident, selectedFactors, onToggleFactor, notice, onNext }) {
+function AnalysisStage({ accident, selectedFactors, chainOrder, onAddFactor, onRemoveFactor, onReorder, notice, onNext }) {
   return (
     <motion.section {...stageMotion} className="stage-grid xl:grid-cols-[1.28fr_0.72fr]">
       <div className="stage-card rounded-[2rem] border border-white/10 bg-panel/75 p-4 shadow-glow backdrop-blur">
-        <ReasoningDesk accident={accident} selectedFactors={selectedFactors} />
+        <ReasoningDesk accident={accident} selectedFactors={chainOrder} />
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-cockpit/70 p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.35em] text-radar">Selected Factors</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {selectedFactors.length ? (
-              selectedFactors.map((factor) => (
-                <span key={factor} className="rounded-full border border-radar/25 bg-radar/10 px-3 py-1 text-xs text-radar">
-                  {factor}
-                </span>
+          <p className="font-mono text-xs uppercase tracking-[0.35em] text-radar">Chain Order</p>
+          <div className="mt-4 space-y-1.5">
+            {chainOrder.length ? (
+              chainOrder.map((factor, index) => (
+                <div key={factor} className="flex items-center gap-2 text-xs">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-radar/20 font-mono text-[10px] text-radar">{index + 1}</span>
+                  <span className="truncate text-white/70">{factor}</span>
+                  {index < chainOrder.length - 1 && <span className="ml-auto text-[10px] text-white/20">→</span>}
+                </div>
               ))
             ) : (
-              <span className="text-sm text-white/45">尚未固定事故因素</span>
+              <span className="text-sm text-white/45">尚未构建因果链</span>
             )}
           </div>
         </div>
       </div>
 
       <div className="stage-stack">
-        <AnalysisBoard accident={accident} selectedFactors={selectedFactors} onToggleFactor={onToggleFactor} notice={notice} />
+        <AnalysisBoard
+          accident={accident}
+          selectedFactors={selectedFactors}
+          chainOrder={chainOrder}
+          onAddFactor={onAddFactor}
+          onRemoveFactor={onRemoveFactor}
+          onReorder={onReorder}
+          notice={notice}
+        />
         <button onClick={onNext} className="w-full rounded-2xl bg-radar px-5 py-4 font-semibold text-cockpit transition hover:brightness-110">
           撰写最终调查报告
         </button>

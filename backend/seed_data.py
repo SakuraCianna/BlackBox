@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models import Accident, CausalFactor, Clue, HistoricalCase, Submission
+from models import Accident, CausalFactor, Clue, HistoricalCase, Submission, TimelineEntry
 
 
 ACCIDENTS = [
@@ -113,6 +113,16 @@ ACCIDENTS = [
                 "lesson": "正确的技术判断需要被清晰沟通和及时决策放大。",
             },
         ],
+        "timeline": [
+            {"time": "13:48", "speaker": "机长", "text": "配平系统有点不对劲，先观察一下。", "is_key_moment": 0},
+            {"time": "14:02", "speaker": "副驾驶", "text": "配平又卡住了，升降舵越来越重。", "is_key_moment": 1},
+            {"time": "14:05", "speaker": "机长", "text": "别再动配平了，我们联系签派讨论备降方案。", "is_key_moment": 0},
+            {"time": "14:09", "speaker": "签派", "text": "建议结合机组判断决定是否继续。", "is_key_moment": 0},
+            {"time": "14:13", "speaker": "机长", "text": "我们继续飞往目的地，保持监控。", "is_key_moment": 1},
+            {"time": "15:21", "speaker": "机长", "text": "配平完全失效！升降舵控制不住了！", "is_key_moment": 1},
+            {"time": "15:22", "speaker": "副驾驶", "text": "飞机在俯仰振荡！全力拉杆！", "is_key_moment": 1},
+            {"time": "15:23", "speaker": "CVR", "text": "[连续告警音 + 操纵杆受力声]", "is_key_moment": 1},
+        ],
     },
     {
         "title": "喷气客机涡轮失效模拟",
@@ -149,7 +159,7 @@ ACCIDENTS = [
             {
                 "type": "text",
                 "title": "起飞前维护放行单",
-                "content": "一号发动机振动值略高，签注为“监控观察，允许放行”。",
+                "content": "一号发动机振动值略高，签注为'监控观察，允许放行'。",
                 "detail": "放行单说明异常已经进入系统，但没有形成停飞或深入检查决策。",
                 "related_factor": "发动机振动趋势被低估",
                 "reliability": "高",
@@ -198,7 +208,7 @@ ACCIDENTS = [
                 "type": "text",
                 "title": "发动机健康监控趋势",
                 "content": "过去三段航班一号发动机 N1 振动逐步上升，但单次读数均未超过硬性停飞阈值。",
-                "detail": "趋势数据说明风险不是突然出现，而是在“每次都差一点”的解释中累积。",
+                "detail": "趋势数据说明风险不是突然出现，而是在'每次都差一点'的解释中累积。",
                 "related_factor": "发动机振动趋势被低估",
                 "reliability": "高",
             },
@@ -222,6 +232,15 @@ ACCIDENTS = [
                 "content": "起飞决策速度用于划分继续起飞和中止起飞的风险边界，越界后的迟疑会迅速侵蚀安全裕度。",
                 "lesson": "训练要让机组在高压下用标准口令快速做出一致动作。",
             },
+        ],
+        "timeline": [
+            {"time": "08:15", "speaker": "机务", "text": "一号发动机振动值略高，签注：监控观察，允许放行。", "is_key_moment": 0},
+            {"time": "08:42", "speaker": "机长", "text": "V1。", "is_key_moment": 0},
+            {"time": "08:42:02", "speaker": "副驾驶", "text": "砰！一号发动机剧烈振动！", "is_key_moment": 1},
+            {"time": "08:42:03", "speaker": "机长", "text": "中断起飞！最大刹车！", "is_key_moment": 1},
+            {"time": "08:42:04", "speaker": "系统", "text": "主警告 — 发动机火警 — 起落架过载", "is_key_moment": 1},
+            {"time": "08:42:08", "speaker": "副驾驶", "text": "跑道不够了！冲出去了！", "is_key_moment": 1},
+            {"time": "08:42:10", "speaker": "CVR", "text": "[金属撞击声 + 飞机滑停声]", "is_key_moment": 1},
         ],
     },
     {
@@ -284,7 +303,7 @@ ACCIDENTS = [
                 "type": "audio",
                 "title": "地面站语音记录",
                 "content": "placeholder/drone_ground_station.mp3",
-                "detail": "音频占位：操作员连续两次喊出“接管无响应”，随后画面冻结。",
+                "detail": "音频占位：操作员连续两次喊出'接管无响应'，随后画面冻结。",
                 "related_factor": "备用链路延迟过高",
                 "reliability": "中",
             },
@@ -330,8 +349,19 @@ ACCIDENTS = [
                 "trigger_factor": "备用链路延迟过高",
                 "title": "远程驾驶的控制闭环",
                 "content": "链路延迟会让人工接管从救命手段变成滞后指令，尤其在低空和高速姿态变化时。",
-                "lesson": "备用链路不能只保证“连得上”，还要满足控制闭环的实时性。",
+                "lesson": "备用链路不能只保证'连得上'，还要满足控制闭环的实时性。",
             },
+        ],
+        "timeline": [
+            {"time": "10:31", "speaker": "操作员", "text": "起飞，航向 270，投送点预计 10:55。", "is_key_moment": 0},
+            {"time": "10:38", "speaker": "系统", "text": "天气缓存时间 09:12，已过期 86 分钟。", "is_key_moment": 0},
+            {"time": "10:42:15", "speaker": "系统", "text": "风场超限告警 — 横滚角超过限制。", "is_key_moment": 1},
+            {"time": "10:42:18", "speaker": "系统", "text": "WIND_ASSIST=false — 抗风模式未启用。", "is_key_moment": 1},
+            {"time": "10:42:22", "speaker": "操作员", "text": "手动接管！切换抗风模式！", "is_key_moment": 0},
+            {"time": "10:42:24", "speaker": "系统", "text": "主链路丢包 42%，切换备用链路。", "is_key_moment": 1},
+            {"time": "10:42:26", "speaker": "操作员", "text": "接管无响应！接管无响应！", "is_key_moment": 1},
+            {"time": "10:42:28", "speaker": "系统", "text": "备用链路 RTT 1.8s — 信号丢失。", "is_key_moment": 1},
+            {"time": "10:42:30", "speaker": "系统", "text": "[画面冻结 — 遥测中断]", "is_key_moment": 1},
         ],
     },
     {
@@ -432,8 +462,20 @@ ACCIDENTS = [
                 "trigger_factor": "自动化模式意识不足",
                 "title": "自动化不是共同态势图",
                 "content": "复杂飞控模式降低了日常工作负荷，也可能在异常时让机组误判系统边界。",
-                "lesson": "人机界面设计必须让“系统现在还能保护什么、不能保护什么”足够清楚。",
+                "lesson": "人机界面设计必须让'系统现在还能保护什么、不能保护什么'足够清楚。",
             },
+        ],
+        "timeline": [
+            {"time": "02:10", "speaker": "系统", "text": "自动驾驶脱开 — 飞行法则降级为备用。", "is_key_moment": 1},
+            {"time": "02:10:15", "speaker": "副驾驶", "text": "我有操纵。", "is_key_moment": 0},
+            {"time": "02:10:50", "speaker": "系统", "text": "失速警告 — STALL STALL STALL。", "is_key_moment": 1},
+            {"time": "02:11:00", "speaker": "副驾驶", "text": "我在拉杆……", "is_key_moment": 1},
+            {"time": "02:11:30", "speaker": "机长", "text": "你们在干什么？", "is_key_moment": 0},
+            {"time": "02:11:45", "speaker": "副驾驶", "text": "我一直在拉杆到底……", "is_key_moment": 1},
+            {"time": "02:12", "speaker": "系统", "text": "双侧杆输入提示 — DUAL INPUT。", "is_key_moment": 1},
+            {"time": "02:13", "speaker": "机长", "text": "爬升……不，下降！", "is_key_moment": 1},
+            {"time": "02:14", "speaker": "副驾驶", "text": "可是我一直拉杆到底了啊……", "is_key_moment": 1},
+            {"time": "02:14:30", "speaker": "系统", "text": "高度 9,000 英尺 — 接近海面。", "is_key_moment": 1},
         ],
     },
     {
@@ -454,7 +496,7 @@ ACCIDENTS = [
             },
             {
                 "factor": "非标准无线电用语与通话重叠",
-                "impact": "关键的“等待起飞”和“仍在跑道上”信息未被完整接收",
+                "impact": "关键的'等待起飞'和'仍在跑道上'信息未被完整接收",
                 "result": "双方对跑道占用状态形成不同理解",
                 "explanation": "无线电干扰和含糊用词让本可中断滑跑的最后机会消失。",
                 "severity": "促成因素",
@@ -541,7 +583,7 @@ ACCIDENTS = [
                 "trigger_factor": "浓雾与地面雷达缺失",
                 "title": "跑道入侵防护",
                 "content": "低能见度机场运行推动了地面监视雷达、跑道状态灯和更严格滑行程序的发展。",
-                "lesson": "当人看不见时，系统必须提供第二套“眼睛”。",
+                "lesson": "当人看不见时，系统必须提供第二套'眼睛'。",
             },
             {
                 "trigger_factor": "权威梯度抑制质疑",
@@ -549,6 +591,18 @@ ACCIDENTS = [
                 "content": "特内里费事故常被视为机组资源管理训练发展的关键案例之一。",
                 "lesson": "驾驶舱安全不是服从权威，而是让质疑能被听见并改变行动。",
             },
+        ],
+        "timeline": [
+            {"time": "16:56", "speaker": "塔台", "text": "KLM 和 Pan Am 滑行至跑道头等待。", "is_key_moment": 0},
+            {"time": "17:02", "speaker": "KLM机长", "text": "我们准备起飞了。", "is_key_moment": 0},
+            {"time": "17:04", "speaker": "塔台", "text": "KLM 请等待起飞，我会通知你。", "is_key_moment": 1},
+            {"time": "17:04:05", "speaker": "Pan Am", "text": "我们还在跑道上滑行。", "is_key_moment": 1},
+            {"time": "17:04:06", "speaker": "KLM", "text": "[啸叫覆盖了后半句]", "is_key_moment": 1},
+            {"time": "17:05", "speaker": "KLM工程师", "text": "那架 Pan American 不在跑道上了吗？", "is_key_moment": 1},
+            {"time": "17:05:05", "speaker": "KLM机长", "text": "是的，已经不在了。", "is_key_moment": 1},
+            {"time": "17:05:10", "speaker": "KLM机长", "text": "起飞推力设定。", "is_key_moment": 1},
+            {"time": "17:05:30", "speaker": "副驾驶", "text": "等等！跑道上有……", "is_key_moment": 1},
+            {"time": "17:05:35", "speaker": "CVR", "text": "[碰撞声 — 录音结束]", "is_key_moment": 1},
         ],
     },
 ]
@@ -564,6 +618,7 @@ def seed_database(db: Session) -> None:
     db.query(HistoricalCase).delete()
     db.query(Clue).delete()
     db.query(CausalFactor).delete()
+    db.query(TimelineEntry).delete()
     db.query(Accident).delete()
     db.commit()
 
@@ -588,5 +643,8 @@ def seed_database(db: Session) -> None:
 
         for sort_order, case in enumerate(item["historical_cases"], start=1):
             db.add(HistoricalCase(accident_id=accident.id, sort_order=sort_order, **case))
+
+        for sort_order, entry in enumerate(item.get("timeline", []), start=1):
+            db.add(TimelineEntry(accident_id=accident.id, sort_order=sort_order, **entry))
 
     db.commit()
