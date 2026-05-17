@@ -163,6 +163,23 @@ body {
   background: rgba(232, 221, 199, 0.18);
 }
 
+.mission-list,
+.stage-card,
+.stage-scroll,
+.evidence-scroll,
+.stage-stack > section {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232, 221, 199, 0.18) transparent;
+}
+
+audio {
+  width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  outline: none;
+  filter: sepia(20%) saturate(70%) hue-rotate(130deg) brightness(90%);
+}
+
 button,
 textarea {
   font: inherit;

@@ -1,4 +1,5 @@
 import json
+import os
 import urllib.request
 import urllib.error
 import ssl
@@ -6,7 +7,7 @@ import ssl
 
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 GLM_MODEL = "glm-4v-flash"
-API_KEY = "631fcd3db1c9423ca8a2f467fc0109bc.CXzsmI0TnS9eYbLc"
+API_KEY = os.environ.get("GLM_API_KEY", "")
 
 
 def review_report(report_text: str, accident_title: str, actual_factors: list[str], matched_factors: list[str]) -> dict:
