@@ -14,7 +14,7 @@ def review_report(report_text: str, accident_title: str, actual_factors: list[st
     if not API_KEY:
         return {
             "ai_score": 0,
-            "ai_feedback": "AI 审查未启用：请在 backend/ai_review.py 中填写 API_KEY。",
+            "ai_feedback": "AI 审查未启用：请设置环境变量 GLM_API_KEY。",
             "chain_quality": "unknown",
         }
 

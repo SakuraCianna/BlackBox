@@ -89,7 +89,7 @@ export default function CrashScene({ accident, compact = false }) {
       disposeObject(root);
       renderer.dispose();
     };
-  }, [accident]);
+  }, [accident.id]);
 
   return (
     <div ref={sceneRef} className={`scene-shell ${compact ? 'scene-shell-compact' : ''}`}>

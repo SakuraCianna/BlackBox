@@ -31,7 +31,7 @@ export default function ReasoningDesk({ accident, selectedFactors }) {
 
       <div className="desk-board">
         <div className="clue-cluster">
-          {accident.clues.slice(0, 5).map((clue, index) => (
+          {accident.clues.map((clue, index) => (
             <div key={clue.id} className="desk-slip">
               <span>{clue.type.toUpperCase()}</span>
               <strong>{clue.title}</strong>

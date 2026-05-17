@@ -7,6 +7,12 @@ const TYPE_LABEL = {
   audio: '音频证据',
 };
 
+const TYPE_HINT = {
+  text: '',
+  image: '点击展开图像证据',
+  audio: '播放音频听取驾驶舱记录',
+};
+
 export default function ClueCard({ clue, index, active, onClick }) {
   const [mediaFailed, setMediaFailed] = useState(false);
   const mediaPath = clue.type === 'text' ? '' : `/media/${clue.content.replace('placeholder/', '')}`;
@@ -33,7 +39,9 @@ export default function ClueCard({ clue, index, active, onClick }) {
 
       <div className="clue-card-body">
         <h3 className="text-lg font-semibold text-white">{clue.title}</h3>
-        <p className="mt-3 text-sm leading-6 text-white/65">{clue.content}</p>
+        <p className="mt-3 text-sm leading-6 text-white/65">
+          {clue.type === 'text' ? clue.content : (TYPE_HINT[clue.type] || clue.content)}
+        </p>
       </div>
 
       {clue.type === 'image' && canShowMedia && (

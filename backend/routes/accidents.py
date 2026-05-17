@@ -24,6 +24,16 @@ def normalize_factor(value: str) -> str:
     return value.strip().lower().replace(" ", "")
 
 
+def score_to_rating(score: int) -> tuple[str, str]:
+    if score >= 85:
+        return "优秀调查员", "你准确还原了事故链条，并能把直接原因与组织层面的根本原因联系起来。"
+    if score >= 65:
+        return "合格调查员", "你找到了主要因素，但报告仍需要补足遗漏环节或说明证据之间的因果关系。"
+    if score >= 40:
+        return "初级调查员", "你捕捉到部分线索，但还没有形成完整事故链。建议回看维护、天气、飞行记录等证据。"
+    return "需要复盘", "当前结论与证据链偏差较大。先从直接异常入手，再追问它为什么会发生。"
+
+
 @router.get("/accidents", response_model=list[AccidentListItem])
 def list_accidents(db: Session = Depends(get_db)):
     return db.query(Accident).order_by(Accident.id).all()
@@ -74,19 +84,7 @@ def submit_report(payload: ReportSubmit, db: Session = Depends(get_db)):
     report_score = min(30, len(set(report_mentions)) * 10 + min(len(payload.report_text.strip()) // 80, 10))
     penalty = min(15, len(extra_keys) * 5)
     score = max(0, min(100, factor_score + report_score - penalty))
-
-    if score >= 85:
-        rating = "优秀调查员"
-        feedback = "你准确还原了事故链条，并能把直接原因与组织层面的根本原因联系起来。"
-    elif score >= 65:
-        rating = "合格调查员"
-        feedback = "你找到了主要因素，但报告仍需要补足遗漏环节或说明证据之间的因果关系。"
-    elif score >= 40:
-        rating = "初级调查员"
-        feedback = "你捕捉到部分线索，但还没有形成完整事故链。建议回看维护、天气、飞行记录等证据。"
-    else:
-        rating = "需要复盘"
-        feedback = "当前结论与证据链偏差较大。先从直接异常入手，再追问它为什么会发生。"
+    rating, feedback = score_to_rating(score)
 
     matched_factors = [actual_by_key[key] for key in matched_keys]
     missed_factors = [actual_by_key[key] for key in missed_keys]
@@ -108,14 +106,7 @@ def submit_report(payload: ReportSubmit, db: Session = Depends(get_db)):
 
     if ai_result["ai_score"] > 0:
         score = max(0, min(100, round(score * 0.7 + ai_result["ai_score"] * 0.3)))
-        if score >= 85:
-            rating = "优秀调查员"
-        elif score >= 65:
-            rating = "合格调查员"
-        elif score >= 40:
-            rating = "初级调查员"
-        else:
-            rating = "需要复盘"
+        rating, feedback = score_to_rating(score)
         feedback = ai_result["ai_feedback"] if ai_result["ai_feedback"] else feedback
 
     submission = Submission(
